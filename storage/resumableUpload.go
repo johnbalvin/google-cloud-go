@@ -28,7 +28,7 @@ var config = &jwt.Config{
 
 func main() {
 	nameObject := "randomName" //be sure this is an unique name because if there's another one with the same name, it will overwrite it
-	urlToUpload, err := resumeUploadURL(nameObject)
+	urlToUpload, err := resumableUploadURL(nameObject)
 	if err != nil {
 		log.Println("Err: ", err)
 		return
@@ -37,7 +37,7 @@ func main() {
 	// use method: PUT , to upload the file with the url
 }
 
-func resumeUploadURL(objectName string) (string, error) {
+func resumableUploadURL(objectName string) (string, error) {
 	token, err := config.TokenSource(context.Background()).Token()
 	if err != nil {
 		return "", err
@@ -53,7 +53,7 @@ func resumeUploadURL(objectName string) (string, error) {
 		return "", err
 	}
 	url, ok := resp.Header["Location"]
-	if !ok && len(url) != 1 {
+	if !ok || len(url) != 1 {
 		return "", errors.New("NOT a valid url or there is not header")
 	}
 	fmt.Printf("\n\nBODY: %s\n\n", resp.Body) // I don´t know yet what the body is it for , I thought it should be empty
